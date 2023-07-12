@@ -1,64 +1,89 @@
 package org.exsample;
 
 
-import org.apache.log4j.BasicConfigurator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.*;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class DatabaseInitService {
-    private static final Logger logger = LoggerFactory.getLogger(DatabaseInitService.class);
+    public static void main(String[] args) {
+        try (Connection connection = DriverManager.getConnection(ConnectionConfig.URL_JDBC, ConnectionConfig.USER, ConnectionConfig.PASSWORD)) {
+            // Проверка наличия таблицы "worker"
+            if (!tableExists(connection, ConnectionConfig.TABLE_WORKER)) {
+                createWorkerTable(connection);
+            } else {
+                System.out.println("Таблица 'worker' уже существует");
+            }
 
-    public static void main(String[] args) throws SQLException {
-        BasicConfigurator.configure();
-        try (Connection connection = new ConnectionSQL().getConnection();
-             Statement statement = connection.createStatement()) {
+            // Проверка наличия таблицы "client"
+            if (!tableExists(connection, ConnectionConfig.TABLE_CLIENT)) {
+                createClientTable(connection);
+            } else {
+                System.out.println("Таблица 'client' уже существует");
+            }
 
-            // Создание таблицы worker, если она не существует
-            logger.info("Creating worker table");
-            statement.execute("CREATE TABLE IF NOT EXISTS worker (" +
-                    "ID SERIAL PRIMARY KEY," +
-                    "NAME VARCHAR(1000) NOT NULL CHECK (LENGTH(NAME) >= 2 AND LENGTH(NAME) <= 1000)," +
-                    "BIRTHDAY DATE CHECK (EXTRACT(YEAR FROM BIRTHDAY) > 1900)," +
-                    "LEVEL ENUM_LEVEL NOT NULL," +
-                    "SALARY INT CHECK (SALARY >= 100 AND SALARY <= 100000)" +
-                    ");");
+            // Проверка наличия таблицы "project"
+            if (!tableExists(connection, ConnectionConfig.TABLE_PROJECT)) {
+                createProjectTable(connection);
+            } else {
+                System.out.println("Таблица 'project' уже существует");
+            }
 
-            // Создание таблицы client, если она не существует
-            logger.info("Creating client table");
-            statement.execute("CREATE TABLE IF NOT EXISTS client (" +
-                    "ID SERIAL PRIMARY KEY," +
-                    "NAME VARCHAR(1000) NOT NULL CHECK (LENGTH(NAME) >= 2 AND LENGTH(NAME) <= 1000)" +
-                    ");");
-
-            // Создание таблицы project, если она не существует
-            logger.info("Creating project table");
-            statement.execute("CREATE TABLE IF NOT EXISTS project (" +
-                    "ID SERIAL PRIMARY KEY," +
-                    "CLIENT_ID INT," +
-                    "START_DATE DATE," +
-                    "FINISH_DATE DATE," +
-                    "FOREIGN KEY (CLIENT_ID) REFERENCES client(ID)" +
-                    ");");
-
-            // Создание таблицы project_worker, если она не существует
-            logger.info("Creating project_worker table");
-            statement.execute("CREATE TABLE IF NOT EXISTS project_worker (" +
-                    "PROJECT_ID INT," +
-                    "WORKER_ID INT," +
-                    "PRIMARY KEY (PROJECT_ID, WORKER_ID)," +
-                    "FOREIGN KEY (PROJECT_ID) REFERENCES project(ID)," +
-                    "FOREIGN KEY (WORKER_ID) REFERENCES worker(ID)" +
-                    ");");
-
-            logger.info("База данных инициализирована успешно.");
+            // Проверка наличия таблицы "project_worker"
+            if (!tableExists(connection, ConnectionConfig.TABLE_PROJECT_WORKER)) {
+                createProjectWorkerTable(connection);
+            } else {
+                System.out.println("Таблица 'project_worker' уже существует");
+            }
         } catch (SQLException e) {
-            logger.error("Error:", e);
+            e.printStackTrace();
         }
     }
 
+    private static boolean tableExists(Connection connection, String tableName) throws SQLException {
+        String checkTableQuery = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = ? AND table_schema = 'public')";
+        try (PreparedStatement statement = connection.prepareStatement(checkTableQuery)) {
+            statement.setString(1, tableName);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next() && resultSet.getBoolean(1);
+            }
+        }
+    }
+
+    private static void createWorkerTable(Connection connection) throws SQLException {
+        String createTableQuery = ConnectionConfig.CREATE_WORKER_TABLE;
+        try (PreparedStatement statement = connection.prepareStatement(createTableQuery)) {
+            statement.executeUpdate();
+            System.out.println("Таблица 'worker' создана");
+        }
+    }
+
+    private static void createClientTable(Connection connection) throws SQLException {
+        String createTableQuery = ConnectionConfig.CREATE_CLIENT_TABLE;
+        try (PreparedStatement statement = connection.prepareStatement(createTableQuery)) {
+            statement.executeUpdate();
+            System.out.println("Таблица 'client' создана");
+        }
+    }
+
+    private static void createProjectTable(Connection connection) throws SQLException {
+        String createTableQuery = ConnectionConfig.CREATE_PROJECT_TABLE;
+        try (PreparedStatement statement = connection.prepareStatement(createTableQuery)) {
+            statement.executeUpdate();
+            System.out.println("Таблица 'project' создана");
+        }
+    }
+
+    private static void createProjectWorkerTable(Connection connection) throws SQLException {
+        String createTableQuery = ConnectionConfig.CREATE_PROJECT_WORKER_TABLE;
+        try (PreparedStatement statement = connection.prepareStatement(createTableQuery)) {
+            statement.executeUpdate();
+            System.out.println("Таблица 'project_worker' создана");
+        }
+    }
     public static List<Map<String, String>> resultSetToHashMap(ResultSet rs) throws SQLException {
         ResultSetMetaData md = rs.getMetaData();
         List<Map<String, String>> resp = new LinkedList<>();

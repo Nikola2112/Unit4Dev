@@ -1,4 +1,5 @@
 package org.exsample;
+
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,80 +15,22 @@ public class DatabasePopulateService {
 
     public static void main(String[] args) throws SQLException {
         BasicConfigurator.configure();
-        try (Connection connection = new ConnectionSQL().getConnection();
-             Statement statement = connection.createStatement()) {
+        try (Connection connection = new ConnectionSQL().getConnection()) {
             // Вставка данных в таблицу worker
             logger.info("Inserting data into worker table");
-            statement.executeUpdate("INSERT INTO worker (NAME, BIRTHDAY, LEVEL, SALARY) VALUES " +
-                    "('John Doe', '1990-05-15', 'Intermediate', 5000), " +
-                    "('Jane Smith', '1985-08-22', 'Senior', 7500), " +
-                    "('Mike Johnson', '1993-02-10', 'Junior', 3500), " +
-                    "('Emily Brown', '1998-11-28', 'Junior', 3000), " +
-                    "('David Wilson', '1991-09-03', 'Intermediate', 5500), " +
-                    "('Sarah Davis', '1995-07-19', 'Junior', 3200), " +
-                    "('Michael Miller', '1988-04-12', 'Senior', 8000), " +
-                    "('Emma Anderson', '1996-06-27', 'Junior', 2800), " +
-                    "('Christopher Thompson', '1987-03-07', 'Senior', 7000), " +
-                    "('Olivia Martinez', '1994-12-31', 'Intermediate', 6000)" +
-                    "ON CONFLICT DO NOTHING;");
+            insertDataIntoWorkerTable(connection);
 
             // Вставка данных в таблицу client
             logger.info("Inserting data into client table");
-            statement.executeUpdate("INSERT INTO client (name) VALUES " +
-                    "('Petr'), " +
-                    "('Oleksiy'), " +
-                    "('Anton'), " +
-                    "('Dmitriy'), " +
-                    "('Ruslan')" +
-                    "ON CONFLICT DO NOTHING;");
+            insertDataIntoClientTable(connection);
 
             // Вставка данных в таблицу project
             logger.info("Inserting data into project table");
-            statement.executeUpdate("INSERT INTO project (client_id, start_date, finish_date) VALUES " +
-                    "(2, '2022-05-18', '2023-01-28'), " +
-                    "(6, '2021-02-08', '2022-08-01'), " +
-                    "(4, '2019-06-24', '2019-07-24'), " +
-                    "(3, '2023-04-27', '2023-06-16'), " +
-                    "(5, '2015-12-07', '2020-10-28'), " +
-                    "(2, '2020-07-21', '2022-01-30'), " +
-                    "(5, '2021-09-15', '2022-05-11'), " +
-                    "(6, '2023-02-11', '2023-04-17'), " +
-                    "(2, '2018-05-19', '2022-01-02'), " +
-                    "(4, '2017-01-20', '2023-03-12')" +
-                    "ON CONFLICT DO NOTHING;");
+            insertDataIntoProjectTable(connection);
 
             // Вставка данных в таблицу project_worker
             logger.info("Inserting data into project_worker table");
-            statement.executeUpdate("INSERT INTO project_worker (project_id, worker_id) VALUES " +
-                    "(41, 2), " +
-                    "(41, 5), " +
-                    "(41, 9), " +
-                    "(42, 1), " +
-                    "(42, 7), " +
-                    "(43, 4), " +
-                    "(43, 6), " +
-                    "(43, 8), " +
-                    "(44, 9), " +
-                    "(44, 1), " +
-                    "(45, 3), " +
-                    "(45, 8), " +
-                    "(45, 1), " +
-                    "(45, 6), " +
-                    "(45, 2), " +
-                    "(46, 3), " +
-                    "(46, 5), " +
-                    "(46, 9), " +
-                    "(47, 10), " +
-                    "(48, 4), " +
-                    "(48, 6), " +
-                    "(49, 2), " +
-                    "(49, 3), " +
-                    "(49, 7), " +
-                    "(50, 2), " +
-                    "(50, 3), " +
-                    "(50, 5), " +
-                    "(50, 10)" +
-                    "ON CONFLICT DO NOTHING;");
+            insertDataIntoProjectWorkerTable(connection);
 
             logger.info("Data insertion completed successfully.");
         } catch (SQLException e) {
@@ -95,7 +38,279 @@ public class DatabasePopulateService {
         }
     }
 
-    public static List<Map<String, String>> resultSetToHashMap(ResultSet rs) throws SQLException {
+    private static void insertDataIntoWorkerTable(Connection connection) throws SQLException {
+        String sql = "INSERT INTO worker (NAME, BIRTHDAY, LEVEL, SALARY) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, "John Doe");
+            statement.setDate(2, Date.valueOf("1990-05-15"));
+            statement.setString(3, "Intermediate");
+            statement.setInt(4, 5000);
+            statement.addBatch();
+
+            statement.setString(1, "Jane Smith");
+            statement.setDate(2, Date.valueOf("1985-08-22"));
+            statement.setString(3, "Senior");
+            statement.setInt(4, 7500);
+            statement.addBatch();
+
+            statement.setString(1, "Mike Johnson");
+            statement.setDate(2, Date.valueOf("1993-02-10"));
+            statement.setString(3, "Junior");
+            statement.setInt(4, 3500);
+            statement.addBatch();
+
+            statement.setString(1, "Emily Brown");
+            statement.setDate(2, Date.valueOf("1998-11-28"));
+            statement.setString(3, "Junior");
+            statement.setInt(4, 3000);
+            statement.addBatch();
+
+            statement.setString(1, "David Wilson");
+            statement.setDate(2, Date.valueOf("1991-09-03"));
+            statement.setString(3, "Intermediate");
+            statement.setInt(4, 5500);
+            statement.addBatch();
+
+            statement.setString(1, "Sarah Davis");
+            statement.setDate(2, Date.valueOf("1995-07-19"));
+            statement.setString(3, "Junior");
+            statement.setInt(4, 3200);
+            statement.addBatch();
+
+            statement.setString(1, "Michael Miller");
+            statement.setDate(2, Date.valueOf("1988-04-12"));
+            statement.setString(3, "Senior");
+            statement.setInt(4, 8000);
+            statement.addBatch();
+
+            statement.setString(1, "Emma Anderson");
+            statement.setDate(2, Date.valueOf("1996-06-27"));
+            statement.setString(3, "Junior");
+            statement.setInt(4, 2800);
+            statement.addBatch();
+
+            statement.setString(1, "Christopher Thompson");
+            statement.setDate(2, Date.valueOf("1987-03-07"));
+            statement.setString(3, "Senior");
+            statement.setInt(4, 7000);
+            statement.addBatch();
+
+            statement.setString(1, "Olivia Martinez");
+            statement.setDate(2, Date.valueOf("1994-12-31"));
+            statement.setString(3, "Intermediate");
+            statement.setInt(4, 6000);
+            statement.addBatch();
+
+            statement.executeBatch();
+        }
+    }
+
+    private static void insertDataIntoClientTable(Connection connection) throws SQLException {
+        String sql = "INSERT INTO client (name) VALUES (?)";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, "Petr");
+            statement.addBatch();
+
+            statement.setString(1, "Oleksiy");
+            statement.addBatch();
+
+            statement.setString(1, "Anton");
+            statement.addBatch();
+
+            statement.setString(1, "Dmitriy");
+            statement.addBatch();
+
+            statement.setString(1, "Ruslan");
+            statement.addBatch();
+
+            statement.executeBatch();
+        }
+    }
+
+    private static void insertDataIntoProjectTable(Connection connection) throws SQLException {
+        String sql = "INSERT INTO project (client_id, start_date, finish_date) VALUES (?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, 2);
+            statement.setDate(2, Date.valueOf("2022-05-18"));
+            statement.setDate(3, Date.valueOf("2023-01-28"));
+            statement.addBatch();
+
+            statement.setInt(1, 6);
+            statement.setDate(2, Date.valueOf("2021-02-08"));
+            statement.setDate(3, Date.valueOf("2022-08-01"));
+            statement.addBatch();
+
+            statement.setInt(1, 4);
+            statement.setDate(2, Date.valueOf("2019-06-24"));
+            statement.setDate(3, Date.valueOf("2019-07-24"));
+            statement.addBatch();
+
+            statement.setInt(1, 3);
+            statement.setDate(2, Date.valueOf("2023-04-27"));
+            statement.setDate(3, Date.valueOf("2023-06-16"));
+            statement.addBatch();
+
+            statement.setInt(1, 5);
+            statement.setDate(2, Date.valueOf("2015-12-07"));
+            statement.setDate(3, Date.valueOf("2020-10-28"));
+            statement.addBatch();
+
+            statement.setInt(1, 2);
+            statement.setDate(2, Date.valueOf("2020-07-21"));
+            statement.setDate(3, Date.valueOf("2022-01-30"));
+            statement.addBatch();
+
+            statement.setInt(1, 5);
+            statement.setDate(2, Date.valueOf("2021-09-15"));
+            statement.setDate(3, Date.valueOf("2022-05-11"));
+            statement.addBatch();
+
+            statement.setInt(1, 6);
+            statement.setDate(2, Date.valueOf("2023-02-11"));
+            statement.setDate(3, Date.valueOf("2023-04-17"));
+            statement.addBatch();
+
+            statement.setInt(1, 2);
+            statement.setDate(2, Date.valueOf("2018-05-19"));
+            statement.setDate(3, Date.valueOf("2022-01-02"));
+            statement.addBatch();
+
+            statement.setInt(1, 4);
+            statement.setDate(2, Date.valueOf("2017-01-20"));
+            statement.setDate(3, Date.valueOf("2023-03-12"));
+            statement.addBatch();
+
+            statement.executeBatch();
+        }
+    }
+
+    private static void insertDataIntoProjectWorkerTable(Connection connection) throws SQLException {
+        String insertQuery = "INSERT INTO project_worker (project_id, worker_id) VALUES (?, ?);";
+
+        try (PreparedStatement statement = connection.prepareStatement(insertQuery)) {
+
+            statement.setInt(1, 41);
+            statement.setInt(2, 2);
+            statement.addBatch();
+
+            statement.setInt(1, 41);
+            statement.setInt(2, 5);
+            statement.addBatch();
+
+            statement.setInt(1, 41);
+            statement.setInt(2, 9);
+            statement.addBatch();
+
+            statement.setInt(1, 42);
+            statement.setInt(2, 1);
+            statement.addBatch();
+
+            statement.setInt(1, 42);
+            statement.setInt(2, 7);
+            statement.addBatch();
+
+            statement.setInt(1, 43);
+            statement.setInt(2, 4);
+            statement.addBatch();
+
+            statement.setInt(1, 43);
+            statement.setInt(2, 6);
+            statement.addBatch();
+
+            statement.setInt(1, 43);
+            statement.setInt(2, 8);
+            statement.addBatch();
+
+            statement.setInt(1, 44);
+            statement.setInt(2, 9);
+            statement.addBatch();
+
+            statement.setInt(1, 44);
+            statement.setInt(2, 1);
+            statement.addBatch();
+
+            statement.setInt(1, 45);
+            statement.setInt(2, 2);
+            statement.addBatch();
+
+            statement.setInt(1, 45);
+            statement.setInt(2, 9);
+            statement.addBatch();
+
+            statement.setInt(1, 45);
+            statement.setInt(2, 2);
+            statement.addBatch();
+
+            statement.setInt(1, 45);
+            statement.setInt(2, 5);
+            statement.addBatch();
+
+            statement.setInt(1, 45);
+            statement.setInt(2, 4);
+            statement.addBatch();
+
+            statement.setInt(1, 46);
+            statement.setInt(2, 3);
+            statement.addBatch();
+
+            statement.setInt(1, 46);
+            statement.setInt(2, 5);
+            statement.addBatch();
+
+            statement.setInt(1, 46);
+            statement.setInt(2, 9);
+            statement.addBatch();
+
+            statement.setInt(1, 47);
+            statement.setInt(2, 10);
+            statement.addBatch();
+
+            statement.setInt(1, 48);
+            statement.setInt(2, 4);
+            statement.addBatch();
+
+            statement.setInt(1, 48);
+            statement.setInt(2, 6);
+            statement.addBatch();
+
+            statement.setInt(1, 49);
+            statement.setInt(2, 2);
+            statement.addBatch();
+
+            statement.setInt(1, 49);
+            statement.setInt(2, 3);
+            statement.addBatch();
+
+            statement.setInt(1, 49);
+            statement.setInt(2, 7);
+            statement.addBatch();
+
+            statement.setInt(1, 50);
+            statement.setInt(2, 2);
+            statement.addBatch();
+
+            statement.setInt(1, 50);
+            statement.setInt(2, 3);
+            statement.addBatch();
+
+            statement.setInt(1, 50);
+            statement.setInt(2, 5);
+            statement.addBatch();
+
+            statement.setInt(1, 50);
+            statement.setInt(2, 10);
+            statement.addBatch();
+
+            statement.executeBatch();
+
+            logger.info("Data insertion completed successfully.");
+
+        } catch (SQLException e) {
+            logger.error("Error:", e);
+        }
+    }
+
+        public static List<Map<String, String>> resultSetToHashMap(ResultSet rs) throws SQLException {
         ResultSetMetaData md = rs.getMetaData();
         List<Map<String, String>> resp = new LinkedList<>();
         while (rs.next()) {
