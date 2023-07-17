@@ -1,4 +1,4 @@
-package ClassForQuery;
+package dto;
 public class MaxProjectCountClient {
     private String name;
     private int projectCount;
@@ -15,11 +15,12 @@ public class MaxProjectCountClient {
     public int getProjectCount() {
         return projectCount;
     }
+
+    @Override
+    public String toString() {
+        return "MaxProjectCountClient{" +
+                "name='" + name + '\'' +
+                ", projectCount=" + projectCount +
+                '}';
+    }
 }
-
-
-
-
-
-
-
