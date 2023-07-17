@@ -1,4 +1,4 @@
-package ClassForQuery;
+package dto;
 
 public class ProjectCost {
     private int projectId;

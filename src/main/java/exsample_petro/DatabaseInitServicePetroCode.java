@@ -1,7 +1,8 @@
-package org.exsample;
+package exsample_petro;
 
 
 
+import connection.ConnectionSQL;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,8 +10,8 @@ import org.slf4j.LoggerFactory;
 import java.sql.*;
 import java.util.*;
 
-import static org.exsample.ConnectionConfig.CREATE_WORKER_TABLE;
-import static org.exsample.ConnectionConfig.TABLE_WORKER;
+import static connection.ConnectionConfig.CREATE_WORKER_TABLE;
+import static connection.ConnectionConfig.TABLE_WORKER;
 
 
 public class DatabaseInitServicePetroCode {

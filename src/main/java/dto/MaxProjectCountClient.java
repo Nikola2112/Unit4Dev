@@ -1,4 +1,4 @@
-package ClassForQuery;
+package dto;
 public class MaxProjectCountClient {
     private String name;
     private int projectCount;

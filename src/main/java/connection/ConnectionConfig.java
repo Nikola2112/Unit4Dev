@@ -1,4 +1,4 @@
-package org.exsample;
+package connection;
 
 public class ConnectionConfig {
 

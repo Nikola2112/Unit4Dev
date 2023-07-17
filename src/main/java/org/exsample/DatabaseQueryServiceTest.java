@@ -1,6 +1,7 @@
 package org.exsample;
 
-import ClassForQuery.*;
+import dto.*;
+import dto.tables.Worker;
 
 import java.util.List;
 

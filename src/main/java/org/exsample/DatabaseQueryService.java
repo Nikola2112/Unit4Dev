@@ -1,6 +1,8 @@
 package org.exsample;
 
-import ClassForQuery.*;
+import connection.ConnectionSQL;
+import dto.*;
+import dto.tables.Worker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

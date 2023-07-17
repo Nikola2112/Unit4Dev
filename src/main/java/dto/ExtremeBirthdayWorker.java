@@ -1,4 +1,4 @@
-package ClassForQuery;
+package dto;
 
 import java.util.Date;
 

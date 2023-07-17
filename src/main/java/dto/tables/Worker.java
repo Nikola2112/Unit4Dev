@@ -1,4 +1,4 @@
-package ClassForQuery;
+package dto.tables;
 
 public class Worker {
 
